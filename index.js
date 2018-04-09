@@ -83,12 +83,12 @@ const processRecognition = data => {
     }
 
     // Hotword detection
-    if (input === 'hello dino') {
+    if (input === 'hello charlie') {
       util.log('INFO', 'MIC', `Heard ${input}, started active listening`);
       tts(`Hello ${appData.name}`);
       return;
     }
-    if (input === 'goodbye dino') {
+    if (input === 'goodbye charlie') {
       util.log('INFO', 'MIC', `Heard ${input}, stopped active listening`);
       util.mic.off();
       tts(`Goodbye ${appData.name}`, false);
