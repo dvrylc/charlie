@@ -1,0 +1,25 @@
+{
+  "name": "dino",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dvrylc/dino.git"
+  },
+  "author": "Daryl Chan",
+  "license": "MIT",
+  "dependencies": {
+    "@google-cloud/speech": "^1.4.0",
+    "@google-cloud/text-to-speech": "^0.1.0",
+    "ping": "^0.2.2",
+    "play-sound": "^1.1.2"
+  },
+  "bugs": {
+    "url": "https://github.com/dvrylc/dino/issues"
+  },
+  "homepage": "https://github.com/dvrylc/dino#readme"
+}

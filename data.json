@@ -1,0 +1,14 @@
+{
+  "gender": "male",
+  "name": "Daryl",
+  "data": [
+    {
+      "q": "This is a question",
+      "a": "This is an answer"
+    },
+    {
+      "q": "(What|Who) are you",
+      "a": "I am dino"
+    }
+  ]
+}
