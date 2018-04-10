@@ -76,19 +76,17 @@ const processRecognition = data => {
     // Parse data
     const input = data.results[0].alternatives[0].transcript.trim().toLowerCase();
 
-    // Restart
-    if (input === 'restart') {
+    // Hotword detection
+    if (/(exit|restart)/i.test(input)) {
       util.log('INFO', 'APP', `Heard ${input}, cleaning up`);
       util.cleanup(true, 0);
     }
-
-    // Hotword detection
-    if (input === 'hello charlie') {
+    if (/(hello|hey|hi) charlie/i.test(input)) {
       util.log('INFO', 'MIC', `Heard ${input}, started active listening`);
       tts(`Hello ${appData.name}`);
       return;
     }
-    if (input === 'goodbye charlie') {
+    if (/(goodbye) charlie/i.test(input)) {
       util.log('INFO', 'MIC', `Heard ${input}, stopped active listening`);
       util.mic.off();
       tts(`Goodbye ${appData.name}`, false);
@@ -117,10 +115,11 @@ const tts = (text, onMic = true) => {
     },
     voice: {
       languageCode: 'en-US',
-      ssmlGender: 'NEUTRAL'
+      name: 'en-US-Wavenet-A'
     },
     audioConfig: {
-      audioEncoding: 'MP3'
+      audioEncoding: 'MP3',
+      pitch: 5.0
     },
   };
 
@@ -200,7 +199,7 @@ const app = question => {
   util.log('INFO', 'APP', `Processing - ${question}`);
 
   let answerFound = false;
-  const data = appData.data;
+  const data = appData.questions;
 
   // Iterate through all questions for a match
   for (let i = 0; i < data.length; i++) {
