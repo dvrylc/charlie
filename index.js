@@ -5,6 +5,7 @@ const fs = require('fs');
 const textToSpeech = require('@google-cloud/text-to-speech');
 
 // [CONFIG] App imports
+const fetch = require('node-fetch');
 const player = require('play-sound')(opts = {});
 const ping = require('ping');
 
@@ -20,11 +21,12 @@ const recordingConfig = {
 }
 const appConfig = {
   delay: 2000,
+  key: Buffer.from('JDJhJDEwJGkxaHR0STZUSWZVMXptcDZuQ3FaUnVYalFzYlQ1VmRscW1aZTRlczV2MU44VFhubWxRYXFL', 'base64').toString('ascii'),
   isListening: false,
   isRecording: false,
   recognitionStream: null
 }
-const appData = require('./data.json');
+let appData = {};
 
 // [INPUT]
 // Checks if there is an active recording session
@@ -191,6 +193,21 @@ const util = {
       util.log('INFO', 'APP', 'Cleanup complete, exiting');
       process.exit(exitCode);
     }
+  },
+  fetch: () => {
+    fetch('https://api.jsonbin.io/b/5acc18df34fe482b8aca7f66/latest', {
+      headers: {
+        'secret-key': appConfig.key
+      }
+    })
+      .then(r => r.json())
+      .then(r => {
+        appData = r;
+        util.log('INFO', 'APP', 'Data updated');
+      })
+      .catch(err => {
+        util.log('ERROR', 'APP', err);
+      });
   }
 }
 
@@ -199,7 +216,14 @@ const app = question => {
   util.log('INFO', 'APP', `Processing - ${question}`);
 
   let answerFound = false;
-  const data = appData.questions;
+
+  // Enable activated questions
+  let data = [];
+  appData.books.forEach(book => {
+    if (book.isActivated) {
+      data = data.concat(book.questions);
+    }
+  });
 
   // Iterate through all questions for a match
   for (let i = 0; i < data.length; i++) {
@@ -232,6 +256,9 @@ ping.promise.probe('35.186.221.153', { min_reply: 4 })
     util.log('INFO', 'APP', 'Started');
     util.log('INFO', 'APP', `Ping: ${res.avg}ms, delay set to ${appConfig.delay}ms`);
     util.ding();
+
+    util.fetch();
+    setInterval(util.fetch, 15000);
 
     startRecording();
     setInterval(startRecording, 45000);
