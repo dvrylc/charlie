@@ -132,15 +132,17 @@ const tts = (text, onMic = true) => {
       return;
     }
 
+    const outputFile = `${__dirname}/output.mp3`;
+
     // Write the audio content to file
-    fs.writeFile('output.mp3', res.audioContent, 'binary', err => {
+    fs.writeFile(outputFile, res.audioContent, 'binary', err => {
       if (err) {
         util.log('ERROR', 'TTS', err);
         return;
       }
 
       // Play file then resume listening
-      player.play('output.mp3', err => {
+      player.play(outputFile, err => {
         if (err) {
           util.log('ERROR', 'TTS', err);
           return;
@@ -176,7 +178,7 @@ const util = {
     }
   },
   ding: () => {
-    player.play('ding.mp3', err => {
+    player.play(`${__dirname}/ding.mp3`, err => {
       if (err) {
         util.log('ERROR', 'TTS', err);
         return;
