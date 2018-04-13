@@ -121,7 +121,7 @@ const tts = (text, onMic = true) => {
     },
     audioConfig: {
       audioEncoding: 'MP3',
-      pitch: 5.0
+      pitch: 4.5
     },
   };
 
@@ -203,14 +203,14 @@ const util = {
       .then(r => r.json())
       .then(r => {
         appData = r;
-        util.log('INFO', 'APP', 'Data updated');
+        util.log('INFO', 'APP', `Data updated - ${r.name}, book 1: ${r.books[0].isActivated}, book 2: ${r.books[1].isActivated}`);
       })
       .catch(err => {
         util.log('ERROR', 'APP', err);
       });
   }
-}
 
+}
 // [APP] Main logic
 const app = question => {
   util.log('INFO', 'APP', `Processing - ${question}`);
