@@ -100,7 +100,7 @@ const processRecognition = data => {
     // Process question
     if (appConfig.isListening) {
       // Detect false positive
-      const similarity = ss.compareTwoStrings(appConfig.lastTTS, input)
+      const similarity = ss.compareTwoStrings(appConfig.lastTTS, input);
       if (similarity > 0.75) {
         util.log('INFO', 'MIC', `False positive ignored - ${similarity}`);
         return;
@@ -227,8 +227,6 @@ const util = {
 const app = question => {
   util.log('INFO', 'APP', `Processing - ${question}`);
 
-  let answerFound = false;
-
   // Enable activated questions
   let data = [];
   appData.books.forEach(book => {
@@ -237,20 +235,23 @@ const app = question => {
     }
   });
 
-  // Iterate through all questions for a match
-  for (let i = 0; i < data.length; i++) {
-    const pair = data[i];
-    const regexp = new RegExp(pair.q, 'i');
+  // Find closest question
+  let dataQ = data.map(pair => pair.q);
+  const closestQ = ss.findBestMatch(question, dataQ).bestMatch;
 
-    if (regexp.test(question)) {
-      util.log('INFO', 'APP', `Found answer - ${pair.a}`);
-      answerFound = true;
-      tts(pair.a);
-      break;
+  // Look for answer if there is a close question
+  if (closestQ.rating > 0.75) {
+    for (let i = 0; i < data.length; i++) {
+      const pair = data[i];
+
+      if (pair.q === closestQ.target) {
+        util.log('INFO', 'APP', `Closest question: ${closestQ.target}, ${closestQ.rating}`);
+        util.log('INFO', 'APP', `Closest answer: ${pair.a}`);
+        answerFound = true;
+        tts(pair.a);
+      }
     }
-  }
-
-  if (!answerFound) {
+  } else {
     util.log('INFO', 'APP', 'Unknown question')
     tts('Sorry, I don\'t know the answer to that. Try asking your parents.');
   }
@@ -259,7 +260,7 @@ const app = question => {
 // [APP]
 // Ping Google servers for latency to determine delay duration
 // Start recording and set restart interval to 45s
-ping.promise.probe('35.186.221.153', { min_reply: 4 })
+ping.promise.probe('1.1.1.1', { min_reply: 4 })
   .then(res => {
     if (res.avg >= 140) {
       appConfig.delay = Math.min(res.avg * 15, 4500);
