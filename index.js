@@ -8,6 +8,7 @@ const textToSpeech = require('@google-cloud/text-to-speech');
 const fetch = require('node-fetch');
 const player = require('play-sound')(opts = {});
 const ping = require('ping');
+const ss = require('string-similarity');
 
 // [CONFIG] Instantiate new clients
 const speechClient = new speech.SpeechClient();
@@ -22,6 +23,7 @@ const recordingConfig = {
 const appConfig = {
   delay: 2000,
   key: Buffer.from('JDJhJDEwJGkxaHR0STZUSWZVMXptcDZuQ3FaUnVYalFzYlQ1VmRscW1aZTRlczV2MU44VFhubWxRYXFL', 'base64').toString('ascii'),
+  lastTTS: '',
   isListening: false,
   isRecording: false,
   recognitionStream: null
@@ -73,7 +75,7 @@ const startRecognitionStream = () => {
 // [INPUT]
 // Process data from recognition
 const processRecognition = data => {
-  // Check that data contains valid inpus
+  // Check that data contains valid input
   if (data.results[0] && data.results[0].alternatives[0]) {
     // Parse data
     const input = data.results[0].alternatives[0].transcript.trim().toLowerCase();
@@ -97,6 +99,13 @@ const processRecognition = data => {
 
     // Process question
     if (appConfig.isListening) {
+      // Detect false positive
+      const similarity = ss.compareTwoStrings(appConfig.lastTTS, input)
+      if (similarity > 0.75) {
+        util.log('INFO', 'MIC', `False positive ignored - ${similarity}`);
+        return;
+      }
+
       util.log('INFO', 'MIC', `Heard - ${input}`);
       util.mic.off();
       app(input);
@@ -110,6 +119,7 @@ const processRecognition = data => {
 // Play the file, then turn on the mic
 const tts = (text, onMic = true) => {
   util.log('INFO', 'TTS', `Speaking - ${text}`);
+  appConfig.lastTTS = text;
 
   const ttsConfig = {
     input: {
