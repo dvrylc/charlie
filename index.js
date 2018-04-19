@@ -101,8 +101,8 @@ const processRecognition = data => {
     if (appConfig.isListening) {
       // Detect false positive
       const similarity = ss.compareTwoStrings(appConfig.lastTTS, input);
-      if (similarity > 0.75) {
-        util.log('INFO', 'MIC', `False positive ignored - ${similarity}`);
+      if (similarity > 0.5) {
+        util.log('INFO', 'MIC', `False positive ignored (${similarity})`);
         return;
       }
 
@@ -245,8 +245,8 @@ const app = question => {
       const pair = data[i];
 
       if (pair.q === closestQ.target) {
-        util.log('INFO', 'APP', `Closest question: ${closestQ.target}, ${closestQ.rating}`);
-        util.log('INFO', 'APP', `Closest answer: ${pair.a}`);
+        util.log('INFO', 'APP', `Closest question (${closestQ.rating}) - ${closestQ.target}`);
+        util.log('INFO', 'APP', `Closest answer - ${pair.a}`);
         answerFound = true;
         tts(pair.a);
       }
