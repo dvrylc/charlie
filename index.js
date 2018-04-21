@@ -100,7 +100,7 @@ const processRecognition = data => {
     // Process question
     if (appConfig.isListening) {
       // Detect false positive
-      const similarity = ss.compareTwoStrings(appConfig.lastTTS, input);
+      const similarity = ss.compareTwoStrings(appConfig.lastTTS, input).toFixed(3);
       if (similarity > 0.5) {
         util.log('INFO', 'MIC', `False positive ignored (${similarity})`);
         return;
