@@ -268,13 +268,14 @@ ping.promise.probe('1.1.1.1', { min_reply: 4 })
 
     util.log('INFO', 'APP', 'Started');
     util.log('INFO', 'APP', `Ping: ${res.avg}ms, delay set to ${appConfig.delay}ms`);
-    util.ding();
 
     util.fetch();
     setInterval(util.fetch, 15000);
 
     startRecording();
     setInterval(startRecording, 45000);
+
+    util.ding();
   })
   .catch(err => {
     util.log('ERROR', 'APP', err);
